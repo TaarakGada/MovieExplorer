@@ -13,9 +13,12 @@ const api = axios.create({
     }
 });
 
-// Helper function to get image URLs
-export const getImageUrl = (path: string, size = 'w500') => {
-    if (!path) return null;
+// Update getImageUrl to handle null/undefined paths
+export const getImageUrl = (path: string | null | undefined, size = 'w500') => {
+    if (!path) {
+        // Return placeholder based on size requested
+        return size.includes('original') ? 'public\placeholder.jpg' : 'public\placeholder.jpg';
+    }
     return `${IMAGE_BASE_URL}/${size}${path}`;
 };
 
@@ -24,10 +27,18 @@ export const movieAPI = {
     getPopular: (page = 1) =>
         api.get('/movie/popular', {
             params: { page }
+        }).then(response => {
+            // Filter out movies without posters
+            response.data.results = response.data.results.filter(movie => movie.poster_path);
+            return response;
         }),
     getSearchResults: (query: string, page = 1) =>
         api.get('/search/movie', {
             params: { query, page }
+        }).then(response => {
+            // Filter out movies without posters
+            response.data.results = response.data.results.filter(movie => movie.poster_path);
+            return response;
         }),
     getDetails: (id: string) =>
         api.get(`/movie/${id}`),

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { movieAPI, getImageUrl } from '@/services/api';
 import { FaStar, FaCalendarAlt, FaHeart, FaRegHeart } from 'react-icons/fa';
@@ -10,6 +9,7 @@ import { addFavorite, removeFavorite } from '@/redux/features/favoritesSlice';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import ImageWithFallback from '@/components/ImageWithFallback';
 
 interface MovieDetails {
     id: string;
@@ -130,12 +130,17 @@ export default function MovieDetailPage() {
         <div className="pb-12">
             {/* Backdrop */}
             <div className="relative w-full h-[300px] md:h-[400px] mb-8">
-                <Image
-                    src={getImageUrl(movie.backdrop_path, 'original')}
+                <ImageWithFallback
+                    src={
+                        movie.backdrop_path
+                            ? getImageUrl(movie.backdrop_path, 'original')
+                            : '/placeholder-movie.jpg'
+                    }
                     alt={movie.title}
                     fill
                     className="object-cover opacity-30"
                     priority
+                    fallbackSrc="/placeholder-movie.jpg"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent" />
             </div>
@@ -145,12 +150,13 @@ export default function MovieDetailPage() {
                     {/* Poster */}
                     <div className="md:w-1/3 lg:w-1/4 flex-shrink-0">
                         <div className="relative aspect-[2/3] w-full rounded-lg overflow-hidden shadow-lg">
-                            <Image
+                            <ImageWithFallback
                                 src={getImageUrl(movie.poster_path)}
                                 alt={movie.title}
                                 fill
                                 className="object-cover"
                                 priority
+                                fallbackSrc="/placeholder-movie.jpg"
                             />
                         </div>
 
@@ -229,7 +235,7 @@ export default function MovieDetailPage() {
                                             className="flex-shrink-0 w-24"
                                         >
                                             <div className="relative w-24 h-24 rounded-full overflow-hidden mb-2">
-                                                <Image
+                                                <ImageWithFallback
                                                     src={
                                                         person.profile_path
                                                             ? getImageUrl(
@@ -240,6 +246,7 @@ export default function MovieDetailPage() {
                                                     alt={person.name}
                                                     fill
                                                     className="object-cover"
+                                                    fallbackSrc="/placeholder-avatar.png"
                                                 />
                                             </div>
                                             <p className="text-sm font-semibold text-center truncate">
@@ -265,7 +272,7 @@ export default function MovieDetailPage() {
                                             className="flex items-center gap-3"
                                         >
                                             <div className="relative w-12 h-12 rounded-full overflow-hidden">
-                                                <Image
+                                                <ImageWithFallback
                                                     src={
                                                         person.profile_path
                                                             ? getImageUrl(
@@ -276,6 +283,7 @@ export default function MovieDetailPage() {
                                                     alt={person.name}
                                                     fill
                                                     className="object-cover"
+                                                    fallbackSrc="/placeholder-avatar.png"
                                                 />
                                             </div>
                                             <div>
@@ -306,13 +314,18 @@ export default function MovieDetailPage() {
                                             className="block group"
                                         >
                                             <div className="relative aspect-[2/3] rounded overflow-hidden mb-2">
-                                                <Image
-                                                    src={getImageUrl(
+                                                <ImageWithFallback
+                                                    src={
                                                         movie.poster_path
-                                                    )}
+                                                            ? getImageUrl(
+                                                                  movie.poster_path
+                                                              )
+                                                            : '/placeholder-movie.jpg'
+                                                    }
                                                     alt={movie.title}
                                                     fill
                                                     className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                                    fallbackSrc="/placeholder-movie.jpg"
                                                 />
                                             </div>
                                             <p className="text-sm font-semibold truncate">
