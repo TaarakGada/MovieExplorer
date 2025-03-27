@@ -6,19 +6,22 @@ type ThemeState = {
 
 // Initialize from localStorage if available
 const getInitialTheme = (): boolean => {
-    if (typeof window !== 'undefined') {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            return savedTheme === 'dark';
-        }
-        // Check user preference
-        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    // Safe guard for SSR
+    if (typeof window === 'undefined') {
+        return false;
     }
-    return false;
+
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        return savedTheme === 'dark';
+    }
+
+    // Check user preference
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
 };
 
 const initialState: ThemeState = {
-    darkMode: false, // Will be updated in useEffect when component mounts
+    darkMode: false, // Default value, will be updated when initializeTheme is called
 };
 
 export const themeSlice = createSlice({
@@ -40,7 +43,10 @@ export const themeSlice = createSlice({
             }
         },
         initializeTheme: (state) => {
-            state.darkMode = getInitialTheme();
+            // Only update if we're on the client side
+            if (typeof window !== 'undefined') {
+                state.darkMode = getInitialTheme();
+            }
         },
     },
 });

@@ -11,11 +11,14 @@ export default function ThemeProvider({ children }: ThemeProviderProps) {
     const { darkMode } = useAppSelector((state) => state.theme);
 
     useEffect(() => {
-        // Update the HTML class for dark mode
-        if (darkMode) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
+        // Only run on client-side to avoid hydration issues
+        if (typeof document !== 'undefined') {
+            // Update the HTML class for dark mode
+            if (darkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
         }
     }, [darkMode]);
 

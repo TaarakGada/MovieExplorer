@@ -29,7 +29,7 @@ export const movieAPI = {
             params: { page }
         }).then(response => {
             // Filter out movies without posters
-            response.data.results = response.data.results.filter(movie => movie.poster_path);
+            response.data.results = response.data.results.filter((movie: { poster_path: any; }) => movie.poster_path);
             return response;
         }),
     getSearchResults: (query: string, page = 1) =>
@@ -37,7 +37,7 @@ export const movieAPI = {
             params: { query, page }
         }).then(response => {
             // Filter out movies without posters
-            response.data.results = response.data.results.filter(movie => movie.poster_path);
+            response.data.results = response.data.results.filter((movie: { poster_path: any; }) => movie.poster_path);
             return response;
         }),
     getDetails: (id: string) =>

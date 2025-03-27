@@ -18,8 +18,11 @@ interface ProvidersProps {
 export default function Providers({ children }: ProvidersProps) {
     // Initialize theme and favorites from localStorage on client side
     useEffect(() => {
-        store.dispatch(initializeTheme());
-        store.dispatch(initializeFavorites());
+        // Ensure we're on the client side
+        if (typeof window !== 'undefined') {
+            store.dispatch(initializeTheme());
+            store.dispatch(initializeFavorites());
+        }
     }, []);
 
     return (
@@ -28,7 +31,11 @@ export default function Providers({ children }: ProvidersProps) {
                 <ThemeProvider>
                     <AuthProvider>
                         {children}
-                        <ToastContainer position="bottom-right" />
+                        <ToastContainer
+                            position="bottom-right"
+                            theme="colored"
+                            autoClose={3000}
+                        />
                     </AuthProvider>
                 </ThemeProvider>
             </SessionProvider>
