@@ -10,7 +10,7 @@ import {
     Movie,
 } from '@/redux/features/favoritesSlice';
 import { toast } from 'react-toastify';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface MovieCardProps {
     movie: {
@@ -28,6 +28,11 @@ export default function MovieCard({ movie }: MovieCardProps) {
     const favorites = useAppSelector((state) => state.favorites.movies);
     const isFavorite = favorites.some((fav) => fav.id === movie.id.toString());
 
+    // For debugging - log the movie data received by this component
+    useEffect(() => {
+        console.log('MovieCard received movie:', movie);
+    }, [movie]);
+
     const handleFavoriteToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation();
@@ -38,10 +43,10 @@ export default function MovieCard({ movie }: MovieCardProps) {
             // Convert the movie prop to match the Movie type expected by Redux
             const favoriteMovie: Movie = {
                 id: movie.id.toString(),
-                title: movie.title,
+                title: movie.title || 'Unknown Title',
                 poster_path: movie.poster_path || '',
                 release_date: movie.release_date || '',
-                vote_average: movie.vote_average,
+                vote_average: movie.vote_average || 0,
             };
             dispatch(addFavorite(favoriteMovie));
             toast.success('Added to favorites');
@@ -55,6 +60,15 @@ export default function MovieCard({ movie }: MovieCardProps) {
             ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
             : placeholderImage;
 
+    // Render a simple fallback if something is very wrong with the movie data
+    if (!movie || typeof movie !== 'object') {
+        return (
+            <div className="rounded-lg shadow-md bg-white dark:bg-gray-800 p-4 text-center">
+                <p>Invalid movie data</p>
+            </div>
+        );
+    }
+
     return (
         <Link
             href={`/movie/${movie.id}`}
@@ -63,7 +77,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
             <div className="relative aspect-[2/3] w-full">
                 <Image
                     src={imageSrc}
-                    alt={movie.title}
+                    alt={movie.title || 'Movie poster'}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                     className="object-cover"
@@ -87,10 +101,12 @@ export default function MovieCard({ movie }: MovieCardProps) {
                 </button>
             </div>
             <div className="p-4">
-                <h3 className="font-bold truncate">{movie.title}</h3>
+                <h3 className="font-bold truncate">
+                    {movie.title || 'Unknown Title'}
+                </h3>
                 <div className="flex items-center mt-2">
                     <FaStar className="text-yellow-500 mr-1" />
-                    <span>{movie.vote_average.toFixed(1)}</span>
+                    <span>{(movie.vote_average || 0).toFixed(1)}</span>
                 </div>
                 {movie.release_date && (
                     <span className="text-sm text-gray-600 dark:text-gray-400">

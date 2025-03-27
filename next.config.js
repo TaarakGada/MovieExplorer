@@ -35,7 +35,7 @@ const nextConfig = {
                 headers: [
                     {
                         key: 'Content-Security-Policy',
-                        value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https://image.tmdb.org data:;",
+                        value: "default-src 'self'; connect-src 'self' https://api.themoviedb.org wss: ws:; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' https://image.tmdb.org data:;",
                     },
                     {
                         key: 'X-DNS-Prefetch-Control',
