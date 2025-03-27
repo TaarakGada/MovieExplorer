@@ -49,7 +49,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
     };
 
     // Use placeholder image when poster_path is null or when image loading fails
-    const placeholderImage = '/placeholder-movie.jpg';
+    const placeholderImage = '/placeholder.jpg';
     const imageSrc =
         movie.poster_path && !imgError
             ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`

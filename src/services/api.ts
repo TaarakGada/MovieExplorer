@@ -17,7 +17,7 @@ const api = axios.create({
 export const getImageUrl = (path: string | null | undefined, size = 'w500') => {
     if (!path) {
         // Return placeholder based on size requested
-        return size.includes('original') ? 'public\placeholder.jpg' : 'public\placeholder.jpg';
+        return size.includes('original') ? '/placeholder-avatar.svg' : '/placeholder-avatar.svg';
     }
     return `${IMAGE_BASE_URL}/${size}${path}`;
 };

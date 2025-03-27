@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Movie List Application
 
-## Getting Started
+A web application for browsing and managing movie lists built with Next.js, Redux, and NextAuth.js.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Authentication
+- User registration and login functionality
+- Secure session management using JWT tokens stored in HTTP-only cookies
+- Protected routes that require authentication
+- User session persistence across page refreshes
+
+### Movie Management
+- Browse popular movies from TMDB API
+- View detailed information about specific movies
+- Search for movies by title
+- Add movies to favorites
+- Create custom movie lists
+
+### User Interface
+- Responsive design that works on mobile and desktop
+- Toast notifications for user feedback
+- Loading states for asynchronous operations
+
+## Technologies Used
+
+- **Next.js**: React framework for server-side rendering and API routes
+- **NextAuth.js**: Authentication library for Next.js applications
+- **Redux Toolkit**: State management library
+- **React Toastify**: Toast notification component
+- **Axios**: HTTP client for API requests
+- **TMDB API**: External API for movie data
+- **TypeScript**: Type-safe JavaScript superset
+
+## Implementation Details
+
+### Authentication Flow
+Authentication is implemented using NextAuth.js with a Credentials provider. JWT tokens are stored in HTTP-only cookies for secure session management.
+
+```ts
+// Authentication configuration
+export const authOptions: AuthOptions = {
+  providers: [
+    CredentialsProvider({
+      // Credentials configuration
+    }),
+  ],
+  callbacks: {
+    // Token and session callbacks
+  },
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  // Other configuration options
+};
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### State Management
+Redux Toolkit is used for global state management, particularly for authentication state and user data.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```ts
+// Auth slice example
+const authSlice = createSlice({
+  name: 'auth',
+  initialState,
+  reducers: {
+    loginStart: (state) => {
+      state.loading = true;
+    },
+    loginSuccess: (state, action) => {
+      state.user = action.payload;
+      state.isAuthenticated = true;
+      state.loading = false;
+      state.error = null;
+    },
+    // Other reducers
+  },
+});
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### API Integration
+The application uses the TMDB API for fetching movie data. API keys are stored in environment variables for security.

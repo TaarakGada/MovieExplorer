@@ -134,13 +134,13 @@ export default function MovieDetailPage() {
                     src={
                         movie.backdrop_path
                             ? getImageUrl(movie.backdrop_path, 'original')
-                            : '/placeholder-movie.jpg'
+                            : '/placeholder.jpg'
                     }
                     alt={movie.title}
                     fill
                     className="object-cover opacity-30"
                     priority
-                    fallbackSrc="/placeholder-movie.jpg"
+                    fallbackSrc="/placeholder.jpg"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent" />
             </div>
@@ -156,7 +156,7 @@ export default function MovieDetailPage() {
                                 fill
                                 className="object-cover"
                                 priority
-                                fallbackSrc="/placeholder-movie.jpg"
+                                fallbackSrc="/placeholder.jpg"
                             />
                         </div>
 
@@ -236,17 +236,13 @@ export default function MovieDetailPage() {
                                         >
                                             <div className="relative w-24 h-24 rounded-full overflow-hidden mb-2">
                                                 <ImageWithFallback
-                                                    src={
+                                                    src={getImageUrl(
                                                         person.profile_path
-                                                            ? getImageUrl(
-                                                                  person.profile_path
-                                                              )
-                                                            : '/placeholder-avatar.png'
-                                                    }
+                                                    )}
                                                     alt={person.name}
                                                     fill
                                                     className="object-cover"
-                                                    fallbackSrc="/placeholder-avatar.png"
+                                                    fallbackSrc="/placeholder.jpg"
                                                 />
                                             </div>
                                             <p className="text-sm font-semibold text-center truncate">
@@ -273,17 +269,13 @@ export default function MovieDetailPage() {
                                         >
                                             <div className="relative w-12 h-12 rounded-full overflow-hidden">
                                                 <ImageWithFallback
-                                                    src={
+                                                    src={getImageUrl(
                                                         person.profile_path
-                                                            ? getImageUrl(
-                                                                  person.profile_path
-                                                              )
-                                                            : '/placeholder-avatar.png'
-                                                    }
+                                                    )}
                                                     alt={person.name}
                                                     fill
                                                     className="object-cover"
-                                                    fallbackSrc="/placeholder-avatar.png"
+                                                    fallbackSrc="/placeholder.jpg"
                                                 />
                                             </div>
                                             <div>
@@ -320,12 +312,12 @@ export default function MovieDetailPage() {
                                                             ? getImageUrl(
                                                                   movie.poster_path
                                                               )
-                                                            : '/placeholder-movie.jpg'
+                                                            : '/placeholder.jpg'
                                                     }
                                                     alt={movie.title}
                                                     fill
                                                     className="object-cover group-hover:scale-105 transition-transform duration-300"
-                                                    fallbackSrc="/placeholder-movie.jpg"
+                                                    fallbackSrc="/placeholder.jpg"
                                                 />
                                             </div>
                                             <p className="text-sm font-semibold truncate">
