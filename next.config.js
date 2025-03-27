@@ -16,7 +16,7 @@ const nextConfig = {
         dangerouslyAllowSVG: true,
         contentDispositionType: 'attachment',
         contentSecurityPolicy:
-            "default-src 'self'; script-src 'none'; sandbox;",
+            "default-src 'self'; img-src 'self' https://image.tmdb.org data:;",
     },
     // Add this to help debug image-related errors
     onDemandEntries: {
