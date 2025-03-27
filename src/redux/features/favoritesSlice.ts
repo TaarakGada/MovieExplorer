@@ -17,15 +17,13 @@ interface FavoritesState {
 const getInitialFavorites = (): Movie[] => {
     if (typeof window !== 'undefined') {
         const savedFavorites = localStorage.getItem('favorites');
-        if (savedFavorites) {
-            return JSON.parse(savedFavorites);
-        }
+        return savedFavorites ? JSON.parse(savedFavorites) : [];
     }
     return [];
 };
 
 const initialState: FavoritesState = {
-    movies: [],
+    movies: getInitialFavorites(),
 };
 
 export const favoritesSlice = createSlice({

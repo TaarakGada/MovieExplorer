@@ -14,7 +14,7 @@ import { useState } from 'react';
 
 interface MovieCardProps {
     movie: {
-        id: number;
+        id: string | number;
         title: string;
         poster_path: string | null;
         vote_average: number;
@@ -41,7 +41,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
                 title: movie.title,
                 poster_path: movie.poster_path || '',
                 release_date: movie.release_date || '',
-                vote_average: 0,
+                vote_average: movie.vote_average,
             };
             dispatch(addFavorite(favoriteMovie));
             toast.success('Added to favorites');
