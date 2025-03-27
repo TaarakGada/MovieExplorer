@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Movie } from '@/redux/features/favoritesSlice';
 import { movieAPI } from '@/services/api';
@@ -10,7 +10,8 @@ import SearchBar from '@/components/SearchBar';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
-export default function Home() {
+// Create a wrapper component that uses useSearchParams
+function HomeContent() {
     const [movies, setMovies] = useState<Movie[]>([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
@@ -229,5 +230,20 @@ export default function Home() {
                 </div>
             )}
         </div>
+    );
+}
+
+// Main component with Suspense boundary
+export default function Home() {
+    return (
+        <Suspense
+            fallback={
+                <div className="flex justify-center items-center min-h-[60vh]">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+                </div>
+            }
+        >
+            <HomeContent />
+        </Suspense>
     );
 }
