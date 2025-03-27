@@ -24,12 +24,8 @@ const nextConfig = {
         maxInactiveAge: 25 * 1000,
         pagesBufferLength: 5,
     },
-    // Adding this to ensure proper image path handling
     experimental: {
         // Better error messages for image paths
-        images: {
-            allowFutureImage: true,
-        },
     },
 };
 
