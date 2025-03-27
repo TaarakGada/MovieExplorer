@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { getImageUrl } from '@/services/api';
 import { FaStar, FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import {
@@ -11,28 +10,50 @@ import {
     Movie,
 } from '@/redux/features/favoritesSlice';
 import { toast } from 'react-toastify';
+import { useState } from 'react';
 
 interface MovieCardProps {
-    movie: Movie;
+    movie: {
+        id: number;
+        title: string;
+        poster_path: string | null;
+        vote_average: number;
+        release_date?: string;
+    };
 }
 
 export default function MovieCard({ movie }: MovieCardProps) {
+    const [imgError, setImgError] = useState(false);
     const dispatch = useAppDispatch();
     const favorites = useAppSelector((state) => state.favorites.movies);
-    const isFavorite = favorites.some((fav) => fav.id === movie.id);
+    const isFavorite = favorites.some((fav) => fav.id === movie.id.toString());
 
-    const handleFavoriteToggle = (e: React.MouseEvent) => {
+    const handleFavoriteToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation();
 
         if (isFavorite) {
-            dispatch(removeFavorite(movie.id));
-            toast.info('Removed from favorites');
+            dispatch(removeFavorite(movie.id.toString()));
         } else {
-            dispatch(addFavorite(movie));
+            // Convert the movie prop to match the Movie type expected by Redux
+            const favoriteMovie: Movie = {
+                id: movie.id.toString(),
+                title: movie.title,
+                poster_path: movie.poster_path || '',
+                release_date: movie.release_date || '',
+                vote_average: 0,
+            };
+            dispatch(addFavorite(favoriteMovie));
             toast.success('Added to favorites');
         }
     };
+
+    // Use placeholder image when poster_path is null or when image loading fails
+    const placeholderImage = '/placeholder-movie.jpg';
+    const imageSrc =
+        movie.poster_path && !imgError
+            ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+            : placeholderImage;
 
     return (
         <Link
@@ -41,12 +62,13 @@ export default function MovieCard({ movie }: MovieCardProps) {
         >
             <div className="relative aspect-[2/3] w-full">
                 <Image
-                    src={getImageUrl(movie.poster_path)}
+                    src={imageSrc}
                     alt={movie.title}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                     className="object-cover"
                     priority={false}
+                    onError={() => setImgError(true)}
                 />
                 <button
                     onClick={handleFavoriteToggle}
@@ -70,6 +92,11 @@ export default function MovieCard({ movie }: MovieCardProps) {
                     <FaStar className="text-yellow-500 mr-1" />
                     <span>{movie.vote_average.toFixed(1)}</span>
                 </div>
+                {movie.release_date && (
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {new Date(movie.release_date).getFullYear()}
+                    </span>
+                )}
             </div>
         </Link>
     );
