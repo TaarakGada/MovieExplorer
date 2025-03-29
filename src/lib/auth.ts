@@ -1,8 +1,8 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-// Mock user database
-const users = [
+// Mock user database with initial test user
+const initialUsers = [
     {
         id: '1',
         name: 'Test User',
@@ -24,9 +24,24 @@ export const authOptions: NextAuthOptions = {
                     return null;
                 }
 
-                // In a real app, you would fetch the user from a database
+                // Get users from localStorage if available (client-side)
+                let users = [...initialUsers];
+                if (typeof window !== 'undefined') {
+                    try {
+                        const storedUsers = localStorage.getItem('registeredUsers');
+                        if (storedUsers) {
+                            const parsedUsers = JSON.parse(storedUsers);
+                            users = [...initialUsers, ...parsedUsers];
+                        }
+                    } catch (error) {
+                        console.error('Error parsing stored users:', error);
+                    }
+                }
+
+                // Find user in combined user database (mock + localStorage)
                 const user = users.find((user) => user.email === credentials.email);
 
+                // Validate password
                 if (user && user.password === credentials.password) {
                     return {
                         id: user.id,

@@ -28,10 +28,52 @@ export default function RegisterPage() {
 
         setIsLoading(true);
 
-        // In a real app, this would make an API call to register the user
-        // For the demo, we'll simulate success and redirect to login
         try {
-            // Simulate API call delay
+            // Check if email already exists in the initial mock database
+            if (email === 'test@example.com') {
+                toast.error(
+                    'Email already exists. Please use a different email.'
+                );
+                setIsLoading(false);
+                return;
+            }
+
+            // Check if email already exists in localStorage
+            let existingUsers = [];
+            try {
+                const storedUsers = localStorage.getItem('registeredUsers');
+                if (storedUsers) {
+                    existingUsers = JSON.parse(storedUsers);
+                    if (
+                        existingUsers.some((user: any) => user.email === email)
+                    ) {
+                        toast.error(
+                            'Email already exists. Please use a different email.'
+                        );
+                        setIsLoading(false);
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking existing users:', error);
+            }
+
+            // Create a new user with a unique ID
+            const newUser = {
+                id: `user_${Date.now()}`,
+                name,
+                email,
+                password,
+            };
+
+            // Save the new user to localStorage
+            const updatedUsers = [...existingUsers, newUser];
+            localStorage.setItem(
+                'registeredUsers',
+                JSON.stringify(updatedUsers)
+            );
+
+            // Simulate a delay to mimic API call
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
             toast.success('Registration successful! Please log in.');
