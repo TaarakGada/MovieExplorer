@@ -1,5 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import fs from 'fs';
+import path from 'path';
 
 // Mock user database with initial test user
 const initialUsers = [
@@ -10,6 +12,33 @@ const initialUsers = [
         password: 'password123',
     },
 ];
+
+// Server-side user storage
+const getUsersFromFile = () => {
+    try {
+        // In production, you would use a real database instead
+        const dataDir = path.join(process.cwd(), 'data');
+        const userFilePath = path.join(dataDir, 'users.json');
+
+        // Create directory if it doesn't exist
+        if (!fs.existsSync(dataDir)) {
+            fs.mkdirSync(dataDir, { recursive: true });
+        }
+
+        // Create file with initial users if it doesn't exist
+        if (!fs.existsSync(userFilePath)) {
+            fs.writeFileSync(userFilePath, JSON.stringify(initialUsers));
+            return initialUsers;
+        }
+
+        // Read and parse users
+        const fileContent = fs.readFileSync(userFilePath, 'utf8');
+        return JSON.parse(fileContent);
+    } catch (error) {
+        console.error('Error reading users file:', error);
+        return initialUsers;
+    }
+};
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -24,25 +53,15 @@ export const authOptions: NextAuthOptions = {
                     return null;
                 }
 
-                // Get users from localStorage if available (client-side)
-                let users = [...initialUsers];
-                if (typeof window !== 'undefined') {
-                    try {
-                        const storedUsers = localStorage.getItem('registeredUsers');
-                        if (storedUsers) {
-                            const parsedUsers = JSON.parse(storedUsers);
-                            users = [...initialUsers, ...parsedUsers];
-                        }
-                    } catch (error) {
-                        console.error('Error parsing stored users:', error);
-                    }
-                }
+                // Get users from server-side storage
+                const users = getUsersFromFile();
 
-                // Find user in combined user database (mock + localStorage)
+                // Find user in database
                 const user = users.find((user) => user.email === credentials.email);
 
-                // Validate password
+                // Validate password and return user info
                 if (user && user.password === credentials.password) {
+                    // Only return data needed for authentication, not password
                     return {
                         id: user.id,
                         name: user.name,
@@ -62,12 +81,15 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         jwt: async ({ token, user }) => {
             if (user) {
+                // Explicitly copy the user ID to the token
                 token.id = user.id;
+                token.name = user.name;
                 token.email = user.email;
             }
             return token;
         },
         session: async ({ session, token }) => {
+            // Make sure the user object has the id property
             if (token && session.user) {
                 session.user.id = token.id as string;
             }
@@ -90,4 +112,5 @@ export const authOptions: NextAuthOptions = {
             },
         },
     },
+    debug: process.env.NODE_ENV === 'development',
 };

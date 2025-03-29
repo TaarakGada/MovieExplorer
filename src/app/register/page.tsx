@@ -29,58 +29,59 @@ export default function RegisterPage() {
         setIsLoading(true);
 
         try {
-            // Check if email already exists in the initial mock database
-            if (email === 'test@example.com') {
-                toast.error(
-                    'Email already exists. Please use a different email.'
-                );
-                setIsLoading(false);
-                return;
+            // Send registration request to our API endpoint
+            const response = await fetch('/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    password,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Registration failed');
             }
 
-            // Check if email already exists in localStorage
-            let existingUsers = [];
+            // Also store in localStorage for backward compatibility with existing code
+            // This ensures both systems work during transition
             try {
+                let existingUsers = [];
                 const storedUsers = localStorage.getItem('registeredUsers');
                 if (storedUsers) {
                     existingUsers = JSON.parse(storedUsers);
-                    if (
-                        existingUsers.some((user: any) => user.email === email)
-                    ) {
-                        toast.error(
-                            'Email already exists. Please use a different email.'
-                        );
-                        setIsLoading(false);
-                        return;
-                    }
                 }
-            } catch (error) {
-                console.error('Error checking existing users:', error);
+
+                const newUser = {
+                    id: `user_${Date.now()}`,
+                    name,
+                    email,
+                    password,
+                };
+
+                localStorage.setItem(
+                    'registeredUsers',
+                    JSON.stringify([...existingUsers, newUser])
+                );
+            } catch (lsError) {
+                console.error('Error storing user in localStorage:', lsError);
+                // Continue anyway since we're using the server API
             }
-
-            // Create a new user with a unique ID
-            const newUser = {
-                id: `user_${Date.now()}`,
-                name,
-                email,
-                password,
-            };
-
-            // Save the new user to localStorage
-            const updatedUsers = [...existingUsers, newUser];
-            localStorage.setItem(
-                'registeredUsers',
-                JSON.stringify(updatedUsers)
-            );
-
-            // Simulate a delay to mimic API call
-            await new Promise((resolve) => setTimeout(resolve, 1000));
 
             toast.success('Registration successful! Please log in.');
             router.push('/login');
         } catch (error) {
             console.error('Registration error:', error);
-            toast.error('Registration failed. Please try again.');
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : 'Registration failed. Please try again.'
+            );
         } finally {
             setIsLoading(false);
         }
